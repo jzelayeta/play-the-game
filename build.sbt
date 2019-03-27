@@ -9,7 +9,7 @@ scalaVersion := "2.12.8"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % Test
-
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.5-play27"
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.zeta.controllers._"
 
