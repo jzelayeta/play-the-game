@@ -10,8 +10,11 @@ scalaVersion := "2.12.8"
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % Test
 libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.5-play27"
+libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.zeta.controllers._"
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.zeta.binders._"
+scalacOptions += "-Ypartial-unification"
