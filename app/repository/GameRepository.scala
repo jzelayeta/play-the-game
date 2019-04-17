@@ -1,32 +1,39 @@
 package repository
 
+import controllers.requests.GameAppointmentRequest
 import javax.inject.Inject
-import model.{GameAppointment, GameSettings, Sport, User}
-import play.api.libs.json.{JsValue, Json, Writes}
+import mapping.ModelBSONMapping
+import model.GameAppointment
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.WriteResult
-import reactivemongo.bson.{BSONDocument, BSONDocumentWriter, Macros}
+import reactivemongo.bson.{BSONDocument, BSONObjectID}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class GameRepository @Inject()(val mongoConnection: MongoConnection)
-                              (implicit val ec: ExecutionContext) {
+                              (implicit val ec: ExecutionContext) extends ModelBSONMapping {
 
-  private implicit val userMapping: BSONDocumentWriter[User] = Macros.writer[User]
-  implicit object SportWriter extends BSONDocumentWriter[Sport] {
-    def write(sport: Sport): BSONDocument =
-      BSONDocument("sport" -> sport.toString)
-  }
-
-
-  private implicit val gameSettingsMapping: BSONDocumentWriter[GameSettings] = Macros.writer[GameSettings]
-  private implicit val productIdMapping: BSONDocumentWriter[GameAppointment] = Macros.writer[GameAppointment]
 
   def appointmentsCollections: Future[BSONCollection] =
     mongoConnection.database.map(_.collection("appointments"))
 
 
-  def createGameAppointment(gameAppointment: GameAppointment): Future[WriteResult] =
-    appointmentsCollections.flatMap(_.insert.one(gameAppointment))
+  def createGameAppointment(gameAppointment: GameAppointmentRequest): Future[WriteResult] = {
+    val document: BSONDocument = BSONDocument("_id" -> BSONObjectID.generate(),
+      "author" -> gameAppointment.author,
+      "appointmentDate" -> gameAppointment.appointmentDate,
+      "createdDate" -> gameAppointment.createdDate,
+      "game" -> gameAppointment.game)
+
+    appointmentsCollections.flatMap(_.insert.one(document))
+  }
+
+  def findAppointmentById(gameAppointmentId: String): Future[Option[GameAppointment]] = {
+    BSONObjectID.parse(gameAppointmentId).map { objId =>
+      val query = BSONDocument("_id" -> objId)
+
+      appointmentsCollections.flatMap(_.find(query).one[GameAppointment])
+    } getOrElse Future.successful(None)
+  }
 
 }
