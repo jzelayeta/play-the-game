@@ -1,7 +1,5 @@
 package model
 
-import reactivemongo.bson.BSONObjectID
-
 case class User(id: String, firstName: String, lastName: String, nickName: String)
 
 case class Team(id: String, name: String, players: List[User])
@@ -34,40 +32,35 @@ object Sport {
   }
 
   def apply(sportName: String): Sport = sportName match {
-    case "footballFive"   => FootballFive
-    case "footballEleven" => FootballEleven
-    case "basketball"     => Basketaball
-    case "tennisSingle"   => TennisSingle
+    case "FootballFive"   => FootballFive
+    case "FootballEleven" => FootballEleven
+    case "Basketball"     => Basketaball
+    case "TennisSingle"   => TennisSingle
   }
 }
 
-case class GameAppointment(appointmentId: String, author: User, appointmentDate: Long, createdDate: Long, gameSettings: GameSettings) {
+case class GameAppointment(appointmentId: String, author: User, appointmentDate: Long, createdDate: Long, game: Game) {
 
-  def addPlayer(user: User): GameAppointment = this.copy(gameSettings = gameSettings.addPlayer(user))
+  def addPlayer(user: User): GameAppointment = this.copy(game = game.addPlayer(user))
 
-  def getPlayers: List[User] = this.gameSettings.currentPlayers
+  def getPlayers: List[User] = this.game.players
 
-  def removePlayer(user: User): GameAppointment = this.copy(gameSettings = gameSettings.removePlayer(user))
+  def removePlayer(user: User): GameAppointment = this.copy(game = game.removePlayer(user))
 
   def changeAuthor(user: User): GameAppointment = this.copy(author = user)
 
-  def markAsDone(maybeResult: Option[Result], timestamp: Long): FinishedGame = {
-    FinishedGame(BSONObjectID.generate().stringify, appointmentId, author, timestamp, Game(gameSettings.sport, maybeResult))
-  }
-}
+  def setResult(result: Result): Game = this.game.copy(result = Some(result))
 
-case class GameSettings(sport: Sport, currentPlayers: List[User]) {
-
-  //Validate Sport max player size: https://blog.leifbattermann.de/2018/03/10/how-to-use-applicatives-for-validation-in-scala-and-save-much-work/
-  def addPlayer(user: User): GameSettings = {
-    this.copy(currentPlayers = currentPlayers :+ user)
-  }
-
-  def removePlayer(user: User): GameSettings = this.copy(currentPlayers = currentPlayers.diff(List(user)))
 }
 
 case class FinishedGame(id: String, appointmentId: String, author: User, timestamp: Long, game: Game)
 
 case class Result(winningTeam: List[User], loserTeam: List[User], winningTeamPoints: Int, loserTeamPints: Int)
 
-case class Game(sport: Sport, result: Option[Result])
+case class Game(sport: Sport, players: List[User], result: Option[Result] = None) {
+
+  def addPlayer(user: User): Game =  this.copy(players = players :+ user)
+
+  def removePlayer(user: User): Game = this.copy(players = players.diff(List(user)))
+
+}
