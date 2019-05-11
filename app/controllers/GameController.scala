@@ -19,10 +19,8 @@ class GameController @Inject()(cc: ControllerComponents,
   implicit def ec: ExecutionContext = cc.executionContext
 
   def createGameAppointment: Action[GameAppointmentRequest] = Action.async(parse.json[GameAppointmentRequest]) { implicit request =>
-    gameRepository.createGameAppointment(request.body).map { lastError =>
-      logger.debug(s"Successfully inserted with LastError: $lastError")
-      Created
-    }
+    gameRepository.
+      createGameAppointment(request.body).map(gameApp => Created(Json.toJson(gameApp)))
   }
 
   def findAppointmentById(appointmentId: String): Action[AnyContent] = Action.async {

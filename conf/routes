@@ -4,8 +4,6 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET         /graphiql                        controllers.AppController.graphiql
-
 POST        /appointments                    controllers.GameController.createGameAppointment
 #PUT         /appointments/:id/players        controllers.GameController.p
 GET         /appointments/:id                controllers.GameController.findAppointmentById(id: String)
