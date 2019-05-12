@@ -29,6 +29,13 @@ class GameController @Inject()(cc: ControllerComponents,
       case None => Status(NOT_FOUND)
     }
   }
+
+  def deleteAppointmentById(appointmentId: String): Action[AnyContent] = Action.async {
+    gameRepository.removeAppointmentById(appointmentId).map {
+      case Some(appointment) => Ok(Json.toJson(appointment))
+      case None => Status(NOT_FOUND)
+    }
+  }
 //
 //  def updateGameAppointment(gameAppointmentId: String): Action[AnyContent] = Action.async(parse.json[UpdateGameAppointmentRequest])
 //    gameRepository.findAppointmentById(appointmentId).map {

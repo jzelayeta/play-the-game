@@ -34,7 +34,14 @@ class GameRepository @Inject()(val mongoConnection: MongoConnection)
       appointmentsCollections.flatMap(_.find(query).one[GameAppointment])
 
     } getOrElse Future.successful(None)
+  }
 
+  def removeAppointmentById(gameAppointmentId: String): Future[Option[GameAppointment]] = {
+    BSONObjectID.parse(gameAppointmentId).map {objId =>
+      val query = BSONDocument("_id" -> objId)
+
+      appointmentsCollections.flatMap(_.findAndRemove(query).map(_.result[GameAppointment]))
+    } getOrElse Future.successful(None)
   }
 
 }

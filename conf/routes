@@ -7,3 +7,4 @@
 POST        /appointments                    controllers.GameController.createGameAppointment
 #PUT         /appointments/:id/players        controllers.GameController.p
 GET         /appointments/:id                controllers.GameController.findAppointmentById(id: String)
+DELETE      /appointments/:id                controllers.GameController.deleteAppointmentById(id: String)

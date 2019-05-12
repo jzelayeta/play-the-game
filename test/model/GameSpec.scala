@@ -6,10 +6,10 @@ import util.Generators
 
 class GameSpec extends FlatSpecLike with Matchers with Generators {
 
-  val zeta = User(getRandomId, "julian", "zeta", "zeta")
-  val palan = User(getRandomId, "andres", "cuchimarro", "palan")
+  val zeta = User(randomBSONDocumentId, "julian", "zeta", "zeta")
+  val palan = User(randomBSONDocumentId, "andres", "cuchimarro", "palan")
   val footballFiveGame = Game(Sport.FootballFive, List(zeta))
-  val appointment = GameAppointment(getRandomId, zeta, millisAfterDaysFromNow(TWO), millisNow, footballFiveGame)
+  val appointment = GameAppointment(randomBSONDocumentId, zeta, millisAfterDaysFromNow(TWO), millisNow, footballFiveGame)
 
   it should "Create an appointment and add Players to it" in {
     appointment.getPlayers.size shouldBe 1
@@ -36,7 +36,7 @@ class GameSpec extends FlatSpecLike with Matchers with Generators {
     val loserTeam: List[User] = (1 to 5).map(_ => randomUser).toList
     val game = Game(Sport.FootballFive, winningTeam ++ loserTeam)
 
-    val appointment = GameAppointment(getRandomId, winningTeam.head, millisAfterDaysFromNow(TWO), millisNow, game)
+    val appointment = GameAppointment(randomBSONDocumentId, winningTeam.head, millisAfterDaysFromNow(TWO), millisNow, game)
     val result = Result(winningTeam, loserTeam, 4, 2)
     val finishedGame = appointment.setResult(result)
 
