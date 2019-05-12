@@ -19,14 +19,19 @@ class GameController @Inject()(cc: ControllerComponents,
   implicit def ec: ExecutionContext = cc.executionContext
 
   def createGameAppointment: Action[GameAppointmentRequest] = Action.async(parse.json[GameAppointmentRequest]) { implicit request =>
-    gameRepository.createGameAppointment(request.body).map { lastError =>
-      logger.debug(s"Successfully inserted with LastError: $lastError")
-      Created
-    }
+    gameRepository.
+      createGameAppointment(request.body).map(gameApp => Created(Json.toJson(gameApp)))
   }
 
   def findAppointmentById(appointmentId: String): Action[AnyContent] = Action.async {
     gameRepository.findAppointmentById(appointmentId).map {
+      case Some(appointment) => Ok(Json.toJson(appointment))
+      case None => Status(NOT_FOUND)
+    }
+  }
+
+  def deleteAppointmentById(appointmentId: String): Action[AnyContent] = Action.async {
+    gameRepository.removeAppointmentById(appointmentId).map {
       case Some(appointment) => Ok(Json.toJson(appointment))
       case None => Status(NOT_FOUND)
     }
