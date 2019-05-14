@@ -16,6 +16,7 @@ object PlaythegameServer {
       client <- BlazeClientBuilder[F](global).stream
       helloWorldAlg = HelloWorld.impl[F]
       jokeAlg = Jokes.impl[F](client)
+      gameAppint = GameAppointment.impl[F]
 
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
@@ -23,7 +24,8 @@ object PlaythegameServer {
       // in the underlying routes.
       httpApp = (
         PlaythegameRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-        PlaythegameRoutes.jokeRoutes[F](jokeAlg)
+        PlaythegameRoutes.jokeRoutes[F](jokeAlg) <+>
+        PlaythegameRoutes.gameAppointmentRoutes[F](gameAppint)
       ).orNotFound
 
       // With Middlewares in place
