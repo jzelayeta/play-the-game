@@ -2,20 +2,28 @@ package com.zeta.playthegame
 
 import cats.effect.{IO, Sync}
 import cats.implicits._
-import io.circe.generic.auto._
-
-import io.circe.syntax._
-import org.http4s.circe._
 import com.zeta.playthegame.repository.{GameRepository, GameStore}
-import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import io.circe.generic.auto._
 import org.http4s.HttpRoutes
+
+import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 
-import scala.util.Random
+
 object PlaythegameRoutes {
+
+  def lalaRoutes: HttpRoutes[IO] = {
+
+    val dsl = new Http4sDsl[IO] {}
+    import dsl._
+
+    HttpRoutes.of[IO] {
+      case GET -> Root / "zeta" => Ok(Lala.Live.zeta)
+      case GET -> Root / "palan" => Ok(Lala.Live.palan)
+    }
+
+  }
 
   def jokeRoutes[F[_]: Sync](J: Jokes[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}

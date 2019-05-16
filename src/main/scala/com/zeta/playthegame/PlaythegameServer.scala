@@ -11,6 +11,16 @@ import scala.concurrent.ExecutionContext.global
 
 object PlaythegameServer {
 
+//  val httpApp = (
+//    PlaythegameRoutes.helloWorldRoutes[F](helloWorldAlg)
+//    ).orNotFound
+
+  def server(implicit T: Timer[IO], C: ContextShift[IO]) =
+    BlazeServerBuilder[IO]
+      .bindHttp(8080, "0.0.0.0")
+      .withHttpApp(PlaythegameRoutes.lalaRoutes.orNotFound)
+      .serve
+
   def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
