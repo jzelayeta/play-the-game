@@ -5,12 +5,14 @@ import org.mongodb.scala._
 
 object MongoConnection {
 
+  import Codecs._
+
   private lazy val mongoConfig: com.typesafe.config.Config = ConfigFactory.defaultApplication().getConfig("mongodb")
   private lazy val mongoUri: String = mongoConfig.getString("uri")
 
   val mongoClient: MongoClient = MongoClient(mongoUri)
 
-  val database: MongoDatabase = mongoClient.getDatabase("matches")
+  val database: MongoDatabase = mongoClient.getDatabase("matches").withCodecRegistry(codecRegistry)
 
 }
 

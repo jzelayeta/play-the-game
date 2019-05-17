@@ -1,5 +1,7 @@
 package com.zeta.playthegame.model
 
+import org.bson.types.ObjectId
+
 case class User(id: String, firstName: String, lastName: String, nickName: String)
 
 case class Team(id: String, name: String, players: List[User])
@@ -37,6 +39,11 @@ object Sport {
     case "Basketball"     => Basketaball
     case "TennisSingle"   => TennisSingle
   }
+}
+
+object GameAppointment {
+  def apply(author: User, appointmentDate: Long, createdDate: Long, game: Game): GameAppointment =
+    new GameAppointment(new ObjectId().toString, author, appointmentDate, createdDate, game)
 }
 
 case class GameAppointment(appointmentId: String, author: User, appointmentDate: Long, createdDate: Long, game: Game) {

@@ -1,7 +1,7 @@
 package com.zeta.playthegame
 
 import cats.effect.IO
-import com.zeta.playthegame.repository.PersonRepository
+import com.zeta.playthegame.repository.GameAppointmentRepository
 
 
 trait GameAppointment {
@@ -12,9 +12,9 @@ object GameAppointment {
 
   trait Service {
 
-    def get(key: String) = IO(PersonRepository.getPerson(key))
+//    def get(key: String) = IO(GameAppointmentRepository.getPerson(key))
 
-    def add(key:String, value: String) = IO(PersonRepository.addPerson(key, value))
+    def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest): IO[model.GameAppointment] = IO(GameAppointmentRepository.addGameAppointment(gameAppointmentRequest))
 
   }
 

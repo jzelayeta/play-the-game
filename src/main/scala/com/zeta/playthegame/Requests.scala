@@ -1,7 +1,6 @@
 package com.zeta.playthegame
 
-import model.{Game, User}
-
+import com.zeta.playthegame.model.{Game, User}
 
 case class UserRequest(id: Option[String] = None,
                        name: Option[String] = None,
