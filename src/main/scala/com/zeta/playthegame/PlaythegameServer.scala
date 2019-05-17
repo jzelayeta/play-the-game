@@ -13,7 +13,6 @@ import scala.concurrent.ExecutionContext.global
 object PlaythegameServer {
 
   val httpApp = (
-    PlaythegameRoutes.lalaRoutes <+>
     PlaythegameRoutes.gameAppointmentRoutes
     ).orNotFound
 

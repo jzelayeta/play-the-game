@@ -22,7 +22,7 @@ lazy val root = (project in file("."))
       "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       "io.circe"        %% "circe-literal"       % CirceVersion,
-      "org.reactivemongo" %% "reactivemongo" % "0.16.6",
+      "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
       "com.typesafe" % "config" % "1.3.4"
     ),
     addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.6"),
