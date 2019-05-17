@@ -1,6 +1,7 @@
 package com.zeta.playthegame
 
 import cats.Applicative
+import cats.effect.IO
 
 import scala.util.Random
 import cats.implicits._
@@ -9,27 +10,55 @@ import io.circe.{Encoder, Json}
 import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 
-trait GameAppointment[F[_]]{
-  def getAppointmentId: F[GameAppointment.GameAppointmentId]
+
+
+
+
+
+trait GameAppointment {
+  val gameAppointment: GameAppointment.Service
 }
 
 object GameAppointment {
-  implicit def apply[F[_]](implicit ev: GameAppointment[F]): GameAppointment[F] = ev
 
-  final case class GameAppointmentId(id: Int) extends AnyVal
+  case class Value(value: String)
 
-  object GameAppointmentId {
-    implicit val gameAppointmentIdEncoder: Encoder[GameAppointmentId] = new Encoder[GameAppointmentId] {
-      final def apply(a: GameAppointmentId): Json = Json.obj(
-        ("appointment", Json.fromInt(a.id)),
-      )
-    }
-    implicit def gameAppointmentEntityEncoder[F[_]: Applicative]: EntityEncoder[F, GameAppointmentId] =
-      jsonEncoderOf[F, GameAppointmentId]
+  trait Service {
+    val repository: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map("zeta" -> "zeta", "palan" -> "palan")
+
+    def get(key: String): IO[String] = IO(repository(key))
+
+    def add(key:String, value: String) = IO(repository += (key -> value))
+
   }
 
-  def impl[F[_]: Applicative]: GameAppointment[F] = new GameAppointment[F]{
-    override def getAppointmentId: F[GameAppointment.GameAppointmentId] =
-      GameAppointmentId(Random.nextInt()).pure[F]
-  }
+  trait Live  extends Service
+  object Live extends Live
+
 }
+
+
+//trait GameAppointment[F[_]]{
+//  def getAppointmentId: F[GameAppointment.GameAppointmentId]
+//}
+//
+//object GameAppointment {
+//  implicit def apply[F[_]](implicit ev: GameAppointment[F]): GameAppointment[F] = ev
+//
+//  final case class GameAppointmentId(id: Int) extends AnyVal
+//
+//  object GameAppointmentId {
+//    implicit val gameAppointmentIdEncoder: Encoder[GameAppointmentId] = new Encoder[GameAppointmentId] {
+//      final def apply(a: GameAppointmentId): Json = Json.obj(
+//        ("appointment", Json.fromInt(a.id)),
+//      )
+//    }
+//    implicit def gameAppointmentEntityEncoder[F[_]: Applicative]: EntityEncoder[F, GameAppointmentId] =
+//      jsonEncoderOf[F, GameAppointmentId]
+//  }
+//
+//  def impl[F[_]: Applicative]: GameAppointment[F] = new GameAppointment[F]{
+//    override def getAppointmentId: F[GameAppointment.GameAppointmentId] =
+//      GameAppointmentId(Random.nextInt()).pure[F]
+//  }
+//}
