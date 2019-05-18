@@ -17,11 +17,10 @@ lazy val root = (project in file("."))
       "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
       "io.circe"        %% "circe-generic"       % CirceVersion,
       "io.circe"        %% "circe-core"          % CirceVersion,
-      "io.circe"        %% "circe-generic"       % CirceVersion,
       "io.circe"        %% "circe-parser"        % CirceVersion,
-      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       "io.circe"        %% "circe-literal"       % CirceVersion,
+      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
       "com.typesafe" % "config" % "1.3.4"
     ),

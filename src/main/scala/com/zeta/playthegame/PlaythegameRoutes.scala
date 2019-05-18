@@ -17,7 +17,7 @@ object PlaythegameRoutes {
 
 
     HttpRoutes.of[IO] {
-      case req @ POST -> Root / "appointment" => req.decode[GameAppointmentRequest](GameAppointment.Live.addGameAppointment(_).flatMap(Ok(_)))
+      case req @ POST -> Root / "appointments" => req.decode[GameAppointmentRequest](GameAppointmentService.Live.addGameAppointment(_).flatMap(Ok(_)))
     }
   }
 }

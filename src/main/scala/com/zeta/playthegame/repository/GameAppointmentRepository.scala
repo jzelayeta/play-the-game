@@ -16,7 +16,7 @@ object GameAppointmentRepository extends LoggerPerClassAware {
       gameAppointmentRequest.appointmentDate,
       gameAppointmentRequest.createdDate,
       gameAppointmentRequest.game)
-    appointmentsCollection.insertOne(appointment).subscribe(new Observer[Completed] {
+    appointmentsCollection.insertOne(appointment).su  bscribe(new Observer[Completed] {
       override def onNext(result: Completed): Unit = logger.info(s"onNext: $result")
 
       override def onError(e: Throwable): Unit = logger.info(s"onError: $e")

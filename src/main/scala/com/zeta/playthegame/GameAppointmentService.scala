@@ -4,11 +4,11 @@ import cats.effect.IO
 import com.zeta.playthegame.repository.GameAppointmentRepository
 
 
-trait GameAppointment {
-  val gameAppointment: GameAppointment.Service
+trait GameAppointmentService {
+  val gameAppointment: GameAppointmentService.Service
 }
 
-object GameAppointment {
+object GameAppointmentService {
 
   trait Service {
 
