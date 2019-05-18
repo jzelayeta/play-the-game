@@ -8,7 +8,6 @@ import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-
 object PlaythegameRoutes {
 
   def gameAppointmentRoutes: HttpRoutes[IO] = {
@@ -17,7 +16,27 @@ object PlaythegameRoutes {
 
 
     HttpRoutes.of[IO] {
-      case req @ POST -> Root / "appointments" => req.decode[GameAppointmentRequest](GameAppointmentService.Live.addGameAppointment(_).flatMap(Ok(_)))
+      case req @ POST -> Root / "appointments" => req.decode[GameAppointmentRequest] {
+        GameAppointmentService.Live.addGameAppointment(_)
+          .flatMap(gap => IO.fromFuture(IO(gap))
+            .flatMap(Ok(_)))
+      }
+
+      case GET -> Root / "appointments" / id =>
+        GameAppointmentService.Live.getGameAppointment(id)
+          .flatMap(gap => IO.fromFuture(IO(gap)))
+          .flatMap({
+            case Some(appointment) => Ok(appointment)
+            case _                 => NotFound()
+          })
+
+      case DELETE -> Root / "appointments" / id =>
+        GameAppointmentService.Live.deleteGameAppointment(id)
+          .flatMap(gap => IO.fromFuture(IO(gap)))
+          .flatMap({
+            case Some(appointment) => Ok(appointment)
+            case _                 => NotFound()
+          })
     }
   }
 }

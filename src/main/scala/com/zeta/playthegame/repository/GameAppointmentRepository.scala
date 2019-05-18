@@ -3,27 +3,37 @@ package com.zeta.playthegame.repository
 import com.zeta.playthegame.GameAppointmentRequest
 import com.zeta.playthegame.model.GameAppointment
 import com.zeta.playthegame.util.LoggerPerClassAware
-import org.mongodb.scala.{Completed, MongoCollection, Observer}
+import org.mongodb.scala.MongoCollection
+import org.mongodb.scala.bson.ObjectId
+import org.mongodb.scala.bson.collection.immutable.Document
 
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object GameAppointmentRepository extends LoggerPerClassAware {
   import MongoConnection._
 
   private val appointmentsCollection: MongoCollection[GameAppointment] = database.getCollection("appointments")
 
+  def getAppointmentById(id: String) = {
+    appointmentsCollection.find(Document("_id" -> new ObjectId(id)))
+      .first()
+      .head()
+      .map(Option(_))
+  }
   def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
     val appointment = GameAppointment(gameAppointmentRequest.author,
       gameAppointmentRequest.appointmentDate,
       gameAppointmentRequest.createdDate,
       gameAppointmentRequest.game)
-    appointmentsCollection.insertOne(appointment).su  bscribe(new Observer[Completed] {
-      override def onNext(result: Completed): Unit = logger.info(s"onNext: $result")
+    appointmentsCollection.insertOne(appointment)
+      .head
+      .map(_ => appointment)
+  }
 
-      override def onError(e: Throwable): Unit = logger.info(s"onError: $e")
-
-      override def onComplete(): Unit = logger.info("onComplete")
-    })
-    appointment
+  def deleteGameAppointment(id: String) = {
+    appointmentsCollection.findOneAndDelete(Document("_id" -> new ObjectId(id)))
+      .head()
+      .map(Option(_))
   }
 
 }

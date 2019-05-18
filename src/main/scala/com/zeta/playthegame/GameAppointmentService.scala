@@ -12,9 +12,11 @@ object GameAppointmentService {
 
   trait Service {
 
-//    def get(key: String) = IO(GameAppointmentRepository.getPerson(key))
+    def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = IO(GameAppointmentRepository.addGameAppointment(gameAppointmentRequest))
 
-    def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest): IO[model.GameAppointment] = IO(GameAppointmentRepository.addGameAppointment(gameAppointmentRequest))
+    def getGameAppointment(key: String) = IO(GameAppointmentRepository.getAppointmentById(key))
+
+    def deleteGameAppointment(key: String) = IO(GameAppointmentRepository.deleteGameAppointment(key))
 
   }
 
