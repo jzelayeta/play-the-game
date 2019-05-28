@@ -3,6 +3,8 @@ val CirceVersion = "0.11.1"
 val Specs2Version = "4.1.0"
 val LogbackVersion = "1.2.3"
 
+mainClass in Compile := Some("com.zeta.playthegame.Main")
+dockerBaseImage := "openjdk:jre-alpine"
 
 lazy val root = (project in file("."))
   .settings(
@@ -43,5 +45,6 @@ scalacOptions ++= Seq(
 
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
+enablePlugins(AshScriptPlugin)
 
 
