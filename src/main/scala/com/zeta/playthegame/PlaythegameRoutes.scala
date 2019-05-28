@@ -14,7 +14,6 @@ object PlaythegameRoutes {
     object dsl extends Http4sDsl[IO]
     import dsl._
 
-
     HttpRoutes.of[IO] {
       case req @ POST -> Root / "appointments" => req.decode[GameAppointmentRequest] {
         GameAppointmentService.Live.addGameAppointment(_)

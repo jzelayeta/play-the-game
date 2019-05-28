@@ -3,37 +3,38 @@ package com.zeta.playthegame.repository
 import com.zeta.playthegame.GameAppointmentRequest
 import com.zeta.playthegame.model.GameAppointment
 import com.zeta.playthegame.util.LoggerPerClassAware
-import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
+import com.zeta.playthegame.repository.Entities._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object GameAppointmentRepository extends LoggerPerClassAware {
   import MongoConnection._
 
-  private val appointmentsCollection: MongoCollection[GameAppointment] = database.getCollection("appointments")
-
   def getAppointmentById(id: String) = {
     appointmentsCollection.find(Document("_id" -> new ObjectId(id)))
       .first()
-      .head()
-      .map(Option(_))
-  }
-  def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
-    val appointment = GameAppointment(gameAppointmentRequest.author,
-      gameAppointmentRequest.appointmentDate,
-      gameAppointmentRequest.createdDate,
-      gameAppointmentRequest.game)
-    appointmentsCollection.insertOne(appointment)
-      .head
-      .map(_ => appointment)
+      .map(_.toModel)
+      .headOption()
   }
 
-  def deleteGameAppointment(id: String) = {
+  def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
+    val appointment = GameAppointmentDocument(new ObjectId(),
+      gameAppointmentRequest.authorId,
+      gameAppointmentRequest.appointmentDate,
+      gameAppointmentRequest.createdDate,
+      GameDocument(gameAppointmentRequest.game.sport.value, gameAppointmentRequest.game.players, gameAppointmentRequest.game.result))
+    appointmentsCollection.insertOne(appointment)
+      .head
+      .map(_ => appointment.toModel)
+  }
+
+  def deleteGameAppointment(id: String): Future[Option[GameAppointment]] = {
     appointmentsCollection.findOneAndDelete(Document("_id" -> new ObjectId(id)))
-      .head()
-      .map(Option(_))
+      .map(_.toModel)
+      .headOption()
   }
 
 }

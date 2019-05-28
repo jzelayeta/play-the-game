@@ -1,41 +1,77 @@
 package com.zeta.playthegame.model
 
-import org.bson.types.ObjectId
-
-case class User(id: String, firstName: String, lastName: String, nickName: String)
-
-case class Team(id: String, name: String, players: List[User])
-
-case class Sport(name: String, maxPlayers: Int)
+import io.circe.{Decoder, Encoder}
 
 
-object GameAppointment {
-  def apply(author: User, appointmentDate: Long, createdDate: Long, game: Game): GameAppointment =
-    new GameAppointment(new ObjectId().toString, author, appointmentDate, createdDate, game)
+case class Team(id: String, name: String, players: List[String])
+
+sealed trait Sport {
+  val maxPlayers: Int
+  val value: String
 }
 
-case class GameAppointment(appointmentId: String, author: User, appointmentDate: Long, createdDate: Long, game: Game) {
+object Sport {
 
-  def addPlayer(user: User): GameAppointment = this.copy(game = game.addPlayer(user))
+  case object FootballFive extends Sport {
+    override val maxPlayers: Int = 10
+    override val value: String = "footballFive"
+  }
 
-  def getPlayers: List[User] = this.game.players
+  case object FootballEleven extends Sport {
+    override val maxPlayers: Int = 22
+    override val value: String = "footballEleven"
+  }
 
-  def removePlayer(user: User): GameAppointment = this.copy(game = game.removePlayer(user))
+  case object Basketball extends Sport {
+    override val maxPlayers: Int = 10
+    override val value: String = "basketball"
+  }
 
-  def changeAuthor(user: User): GameAppointment = this.copy(author = user)
+  case object TennisSingle extends Sport {
+    override val maxPlayers: Int = 2
+    override val value: String = "tennisSingle"
+  }
 
-  def setResult(result: Result): Game = this.game.copy(result = Some(result))
+  case object TennisDouble extends Sport {
+    override val maxPlayers: Int = 4
+    override val value: String = "tennisDouble"
+  }
+
+  def apply(sportName: String): Sport = sportName match {
+    case "footballFive" => FootballFive
+    case "footballEleven" => FootballEleven
+    case "basketball" => Basketball
+    case "tennisSingle" => TennisSingle
+  }
+
+  implicit val encoder: Encoder[Sport] = Encoder.encodeString contramap (_.value)
+
+  implicit val decoder: Decoder[Sport] = Decoder.decodeString map (Sport(_))
+}
+
+
+case class GameAppointment(appointmentId: String, authorId: String, appointmentDate: Long, createdDate: Long, game: Game) {
+
+  def addPlayer(user: String): GameAppointment = this.copy(game = game.addPlayer(user))
+
+  def getPlayers: List[String] = this.game.players
+
+  def removePlayer(user: String): GameAppointment = this.copy(game = game.removePlayer(user))
+
+  def changeAuthor(user: String): GameAppointment = this.copy(authorId = user)
+
+  def setResult(aResult: Result): GameAppointment = this.copy(game = game.copy(result = Some(aResult)))
 
 }
 
-case class FinishedGame(id: String, appointmentId: String, author: User, timestamp: Long, game: Game)
+case class FinishedGame(id: String, appointmentId: String, author: String, timestamp: Long, game: Game)
 
-case class Result(winningTeam: List[User], loserTeam: List[User], winningTeamPoints: Int, loserTeamPints: Int)
+case class Result(winningTeam: List[String], loserTeam: List[String], winningTeamPoints: Int, loserTeamPints: Int)
 
-case class Game(sport: Sport, players: List[User], result: Option[Result] = None) {
+case class Game(sport: Sport, players: List[String], result: Option[Result] = None) {
 
-  def addPlayer(user: User): Game =  this.copy(players = players :+ user)
+  def addPlayer(user: String): Game =  this.copy(players = players :+ user)
 
-  def removePlayer(user: User): Game = this.copy(players = players.diff(List(user)))
+  def removePlayer(user: String): Game = this.copy(players = players.diff(List(user)))
 
 }
