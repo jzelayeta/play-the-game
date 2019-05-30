@@ -11,7 +11,7 @@
 # Load tests
 
 This microservice use Gatling for load tests.
-* Make sure you have an instance running
+* Make sure you have an instance running of the microservice
 * For adding a new Gatling simulation make sure it is under `/simulation` folder in `test`
 * For executing simulations just use same args for sbt testing, i.e `sbt gatling:test` will execute all simuations,
   or use `testOnly`
