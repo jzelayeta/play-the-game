@@ -1,15 +1,14 @@
+
+
 val Http4sVersion = "0.20.0"
 val CirceVersion = "0.11.1"
 val Specs2Version = "4.1.0"
 val LogbackVersion = "1.2.3"
 
-mainClass in Compile := Some("com.zeta.playthegame.Main")
-dockerBaseImage := "openjdk:jre-alpine"
-
 lazy val root = (project in file("."))
   .settings(
     organization := "com.zeta",
-    name := "play-the-game",
+    name := "play_the_game",
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.8",
     scalacOptions ++= Seq("-Ypartial-unification"),
@@ -23,13 +22,19 @@ lazy val root = (project in file("."))
       "io.circe"        %% "circe-parser"        % CirceVersion,
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       "io.circe"        %% "circe-literal"       % CirceVersion,
-      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
       "com.typesafe" % "config" % "1.3.4",
+      "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
+      "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.0.0" % "test,it",
+      "io.gatling"            % "gatling-test-framework"    % "3.0.0" % "test,it"
     ),
     addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.6"),
     addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.2.4")
-  )
+  ).enablePlugins(JavaAppPackaging)
+   .enablePlugins(DockerPlugin)
+   .enablePlugins(AshScriptPlugin)
+  .enablePlugins(GatlingPlugin)
+
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
@@ -43,8 +48,13 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
 )
 
-enablePlugins(JavaAppPackaging)
-enablePlugins(DockerPlugin)
-enablePlugins(AshScriptPlugin)
+mainClass in Compile := Some("com.zeta.playthegame.Main")
+dockerBaseImage := "openjdk:jre-alpine"
+packageName in Docker := "play_the_game"
+dockerExposedPorts := Seq(8080)
+bashScriptExtraDefines += """addJava "-Dconfig.resource=production.conf""""
+
+
+
 
 

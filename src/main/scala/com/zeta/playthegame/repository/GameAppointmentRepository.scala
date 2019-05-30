@@ -1,14 +1,13 @@
 package com.zeta.playthegame.repository
 
 import com.zeta.playthegame.GameAppointmentRequest
-import com.zeta.playthegame.model.GameAppointment
+import com.zeta.playthegame.repository.Entities._
 import com.zeta.playthegame.util.LoggerPerClassAware
+import org.mongodb.scala.Completed
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
-import com.zeta.playthegame.repository.Entities._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object GameAppointmentRepository extends LoggerPerClassAware {
   import MongoConnection._
@@ -16,7 +15,6 @@ object GameAppointmentRepository extends LoggerPerClassAware {
   def getAppointmentById(id: String) = {
     appointmentsCollection.find(Document("_id" -> new ObjectId(id)))
       .first()
-      .map(_.toModel)
       .headOption()
   }
 
@@ -27,13 +25,15 @@ object GameAppointmentRepository extends LoggerPerClassAware {
       gameAppointmentRequest.createdDate,
       GameDocument(gameAppointmentRequest.game.sport.value, gameAppointmentRequest.game.players, gameAppointmentRequest.game.result))
     appointmentsCollection.insertOne(appointment)
-      .head
-      .map(_ => appointment.toModel)
+      .head()
+      .map {
+        case Completed() => Some(appointment)
+        case _           => None
+      }
   }
 
-  def deleteGameAppointment(id: String): Future[Option[GameAppointment]] = {
+  def deleteGameAppointment(id: String) = {
     appointmentsCollection.findOneAndDelete(Document("_id" -> new ObjectId(id)))
-      .map(_.toModel)
       .headOption()
   }
 

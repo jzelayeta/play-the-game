@@ -14,7 +14,6 @@ object MongoConnection {
   private val mongoClient: MongoClient = MongoClient(mongoUri)
   private val databaseName = "matches"
   private val appointmentsCollectionName = "appointments"
-  private val usersCollectionName = "users"
 
   val database: MongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry)
   val appointmentsCollection: MongoCollection[GameAppointmentDocument] = database.getCollection(appointmentsCollectionName)
