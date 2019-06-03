@@ -5,6 +5,7 @@ val CirceVersion = "0.11.1"
 val Specs2Version = "4.1.0"
 val LogbackVersion = "1.2.3"
 
+
 lazy val root = (project in file("."))
   .settings(
     organization := "com.zeta",
@@ -24,8 +25,10 @@ lazy val root = (project in file("."))
       "io.circe"        %% "circe-literal"       % CirceVersion,
       "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
       "com.typesafe" % "config" % "1.3.4",
+      "org.scalactic" %% "scalactic" % "3.0.5",
       "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.0.0" % "test,it",
+      "org.scalatest" %% "scalatest" % "3.0.5" % "test",
       "io.gatling"            % "gatling-test-framework"    % "3.0.0" % "test,it"
     ),
     addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.6"),

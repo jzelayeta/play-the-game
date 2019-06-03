@@ -60,8 +60,15 @@ case class GameAppointment(appointmentId: String, authorId: String, appointmentD
 
   def changeAuthor(user: String): GameAppointment = this.copy(authorId = user)
 
-  def setResult(aResult: Result): GameAppointment = this.copy(game = game.copy(result = Some(aResult)))
+  def addResult(aResult: Result): GameAppointment = this.copy(game = game.copy(result = Some(aResult)))
 
+  def sport = game.sport
+
+  def changeSport(newSport: Sport) = this.copy(game = game.copy(sport = newSport))
+
+  def winner = game.result.map(_.winningTeam)
+
+  def loser = game.result.map(_.loserTeam)
 }
 
 case class FinishedGame(id: String, appointmentId: String, author: String, timestamp: Long, game: Game)
