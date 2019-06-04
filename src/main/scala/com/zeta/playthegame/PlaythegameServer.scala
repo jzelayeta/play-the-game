@@ -7,9 +7,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 
 object PlaythegameServer {
 
-  val httpApp = (
-    PlaythegameRoutes.gameAppointmentRoutes
-    ).orNotFound
+  val httpApp = PlaythegameRoutes.gameAppointmentRoutes.orNotFound
 
   def server(implicit T: Timer[IO], C: ContextShift[IO]) =
     BlazeServerBuilder[IO]
