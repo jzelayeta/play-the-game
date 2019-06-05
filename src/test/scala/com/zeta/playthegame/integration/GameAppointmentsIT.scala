@@ -1,47 +1,71 @@
 package com.zeta.playthegame.integration
-import cats.effect.{ContextShift, IO, IOApp, Timer}
-import com.zeta.playthegame.PlaythegameRoutes
+
+import java.util.concurrent.TimeUnit.DAYS
+
+import cats.effect.IO
 import com.zeta.playthegame.model.Sport.FootballFive
 import com.zeta.playthegame.model.{Game, GameAppointment}
 import com.zeta.playthegame.util.Generators
-import io.circe.Json
-import org.http4s.client.blaze.BlazeClientBuilder
-import org.http4s.implicits._
-import org.http4s.server.blaze.BlazeServerBuilder
-import org.http4s.{Method, Request, Uri}
-import org.scalatest.{FlatSpecLike, Matchers}
+import com.zeta.playthegame.{GameAppointmentRequest, PlaythegameRoutes}
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.implicits._
 import org.http4s.circe._
+import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.{HttpRoutes, Method, Request, Uri}
+import org.scalatest.{FlatSpecLike, Matchers}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GameAppointmentsIT extends FlatSpecLike with Matchers with Generators {
+class GameAppointmentsIT extends FlatSpecLike
+  with Matchers
+  with Generators
+  with ServerApp {
 
-  implicit val ec                   = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val cs: ContextShift[IO] = IO.contextShift(ec)
-  implicit val timer: Timer[IO]     = IO.timer(ec)
+  override val router: HttpRoutes[IO] = PlaythegameRoutes.gameAppointmentRoutes
 
+  override def beforeAll() = startServer
 
-  val serviceUri = Uri.unsafeFromString("http://localhost:8080")
-  createServer().resource.use(_ => IO.never).start.unsafeRunSync()
+  override def afterAll() = stopServer
 
-  "GET appointment" should "bla" in {
-    val id = "5cef46644260d974b78e89d9"
-    val request  = Request[IO](Method.GET, serviceUri / "appointments" / id)
-    val response = BlazeClientBuilder[IO](global).resource.use(_.expect[Json](request))
-    response.unsafeRunSync() shouldBe GameAppointment(randomStringId,
-      randomStringId,
-      1L,
-      2L,
-      Game(FootballFive, List.empty)).asJson
+  def request(uri: Uri, method: Method) = Request[IO](method, uri)
+
+  def post(uri: Uri) = request(uri, Method.POST)
+
+  def post(uri: Uri, body: Json): Request[IO] = request(uri, Method.POST).withEntity(body)
+
+  def get(uri: Uri) = request(uri, Method.GET)
+
+  def response(request: Request[IO]) = BlazeClientBuilder[IO](global).resource.use(_.expect[Json](request))
+
+  def status(request: Request[IO]) = BlazeClientBuilder[IO](global).resource.use(_.status(request))
+
+  "POST appointment" should "success when submitting a valid body" in {
+    val authorId = randomStringId
+    val createdDate = millisNow
+    val appointmentDate = millisNowPlus(2, DAYS)
+    val requestBody = GameAppointmentRequest(
+      authorId,
+      appointmentDate,
+      createdDate,
+      Game(FootballFive, List(randomStringId))).asJson
+
+    val postRequest = post(baseUri / "appointments", requestBody)
+    val maybeCreatedAppointment = response(postRequest).unsafeRunSync().as[GameAppointment]
+    maybeCreatedAppointment shouldBe 'right
+    val createdGameAppointment = maybeCreatedAppointment.right.get
+
+    createdGameAppointment.authorId shouldBe authorId
+    createdGameAppointment.appointmentDate shouldBe appointmentDate
+    createdGameAppointment.createdDate shouldBe createdDate
+    createdGameAppointment.game.sport shouldBe FootballFive
+
+    val getRequest = get(baseUri / "appointments" / createdGameAppointment.appointmentId)
+    val maybeRetrievedAppointment = response(getRequest).unsafeRunSync().as[GameAppointment]
+    maybeRetrievedAppointment shouldBe 'right
+    val retrievedGameAppointment = maybeCreatedAppointment.right.get
+
+    retrievedGameAppointment shouldBe createdGameAppointment
   }
 
-  private def createServer() = {
-    BlazeServerBuilder[IO]
-        .bindHttp(8080, "0.0.0.0")
-        .withHttpApp(PlaythegameRoutes.gameAppointmentRoutes.orNotFound)
-    }
 }
