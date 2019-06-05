@@ -2,7 +2,6 @@ package com.zeta.playthegame.util
 
 import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
-
 import org.bson.types.ObjectId
 
 import scala.concurrent.duration.Duration
