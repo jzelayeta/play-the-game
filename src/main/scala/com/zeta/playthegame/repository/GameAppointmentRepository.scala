@@ -7,26 +7,27 @@ import com.zeta.playthegame.util.LoggerPerClassAware
 import org.mongodb.scala.Completed
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
+import com.zeta.playthegame.util.IOExt._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
 
-  def getAppointmentById(id: String) = IO.fromFuture {
-    mongoConnection.appointmentsCollection map {
+  def getAppointmentById(id: String) = mongoConnection.appointmentsCollection map {
       _.find(Document("_id" -> new ObjectId(id)))
         .first()
         .map(_.toModel)
         .headOption()
-    }
-  }
-    def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
+    } toIO
+
+
+  def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
       val appointment = GameAppointmentDocument(new ObjectId(),
         gameAppointmentRequest.authorId,
         gameAppointmentRequest.appointmentDate,
         gameAppointmentRequest.createdDate,
         GameDocument(gameAppointmentRequest.game.sport.value, gameAppointmentRequest.game.players, gameAppointmentRequest.game.result))
-      IO.fromFuture {
+
         mongoConnection.appointmentsCollection.map {
           _.insertOne(appointment)
             .head()
@@ -34,16 +35,13 @@ class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit execu
               case Completed() => Some(appointment.toModel)
               case _ => None
             }
-        }
+        } toIO
       }
-    }
 
-    def deleteGameAppointment(id: String) = IO.fromFuture {
-      mongoConnection.appointmentsCollection.map {
+    def deleteGameAppointment(id: String) = mongoConnection.appointmentsCollection.map {
         _.findOneAndDelete(Document("_id" -> new ObjectId(id)))
           .map(_.toModel)
           .headOption()
-      }
-    }
+      } toIO
 
 }
