@@ -62,6 +62,8 @@ case class Appointment(appointmentId: String, authorId: String, appointmentDate:
 
   def addResult(aResult: Result): Appointment = this.copy(game = game.copy(result = Some(aResult)))
 
+  def changeAppointmentDate(newAppointmentDate: Long) = this.copy(appointmentDate = newAppointmentDate)
+
   def sport = game.sport
 
   def changeSport(newSport: Sport) = this.copy(game = game.copy(sport = newSport))
