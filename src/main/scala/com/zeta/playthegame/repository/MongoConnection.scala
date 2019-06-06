@@ -23,7 +23,7 @@ trait MongoConnection {
 }
 
 object MongoConnection extends MongoConnection {
-  val databaseName = "matches"
+  val databaseName = "play_the_game"
   val appointmentsCollectionName = "appointments"
   val appointmentsCollection: IO[MongoCollection[AppointmentDocument]] = database.map(_.getCollection(appointmentsCollectionName))
 }
