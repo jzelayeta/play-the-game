@@ -2,14 +2,14 @@ package com.zeta.playthegame
 
 
 import cats.effect.IO
-import com.zeta.playthegame.repository.AppointmentRepository
+import com.zeta.playthegame.repository.AppointmentsRepository
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-class AppointmentsRoutes(gameAppointmentRepository: AppointmentRepository) {
+class AppointmentsRoutes(gameAppointmentRepository: AppointmentsRepository) {
 
   def routes: HttpRoutes[IO] = {
     object dsl extends Http4sDsl[IO]
