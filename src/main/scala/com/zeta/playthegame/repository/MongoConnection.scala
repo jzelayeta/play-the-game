@@ -1,24 +1,31 @@
 package com.zeta.playthegame.repository
 
+import cats.effect.IO
 import com.typesafe.config.ConfigFactory
+import com.zeta.playthegame.repository.Entities.GameAppointmentDocument
 import org.mongodb.scala._
-import com.zeta.playthegame.repository.Entities._
 
-object MongoConnection {
-
+trait MongoConnection {
   import Codecs._
 
-  private lazy val mongoConfig: com.typesafe.config.Config = ConfigFactory.defaultApplication().getConfig("mongodb")
+  private lazy val mongoConfig: com.typesafe.config.Config = ConfigFactory.defaultApplication().resolve().getConfig("mongodb")
   private lazy val mongoUri: String = mongoConfig.getString("uri")
 
-  private val mongoClient: MongoClient = MongoClient(mongoUri)
-  private val databaseName = "matches"
-  private val appointmentsCollectionName = "appointments"
+  private val mongoClient: IO[MongoClient] = IO {
+    MongoClient(mongoUri)
+  }
 
-  val database: MongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry)
-  val appointmentsCollection: MongoCollection[GameAppointmentDocument] = database.getCollection(appointmentsCollectionName)
+  val databaseName: String
 
+  val database: IO[MongoDatabase] = mongoClient.map(_.getDatabase(databaseName).withCodecRegistry(codecRegistry))
 
+  val appointmentsCollection: IO[MongoCollection[GameAppointmentDocument]]
+}
+
+object MongoConnection extends MongoConnection {
+  val databaseName = "matches"
+  val appointmentsCollectionName = "appointments"
+  val appointmentsCollection: IO[MongoCollection[GameAppointmentDocument]] = database.map(_.getCollection(appointmentsCollectionName))
 }
 
 

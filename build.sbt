@@ -24,7 +24,7 @@ lazy val root = (project in file("."))
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       "io.circe"        %% "circe-literal"       % CirceVersion,
       "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
-      "com.typesafe" % "config" % "1.3.4",
+      "com.github.pureconfig" %% "pureconfig" % "0.11.0",
       "org.scalactic" %% "scalactic" % "3.0.5",
       "org.typelevel" %% "cats-core" % "2.0.0-M1",
       "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
