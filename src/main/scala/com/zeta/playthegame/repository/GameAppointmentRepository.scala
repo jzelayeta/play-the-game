@@ -1,15 +1,14 @@
 package com.zeta.playthegame.repository
 
-import cats.effect.IO
 import com.zeta.playthegame.GameAppointmentRequest
 import com.zeta.playthegame.repository.Entities._
+import com.zeta.playthegame.util.IOExt._
 import com.zeta.playthegame.util.LoggerPerClassAware
 import org.mongodb.scala.Completed
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
-import com.zeta.playthegame.util.IOExt._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
 
