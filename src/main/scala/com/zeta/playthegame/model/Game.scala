@@ -50,17 +50,17 @@ object Sport {
 }
 
 
-case class GameAppointment(appointmentId: String, authorId: String, appointmentDate: Long, createdDate: Long, game: Game) {
+case class Appointment(appointmentId: String, authorId: String, appointmentDate: Long, createdDate: Long, game: Game) {
 
-  def addPlayer(user: String): GameAppointment = this.copy(game = game.addPlayer(user))
+  def addPlayer(user: String): Appointment = this.copy(game = game.addPlayer(user))
 
   def getPlayers: List[String] = this.game.players
 
-  def removePlayer(user: String): GameAppointment = this.copy(game = game.removePlayer(user))
+  def removePlayer(user: String): Appointment = this.copy(game = game.removePlayer(user))
 
-  def changeAuthor(user: String): GameAppointment = this.copy(authorId = user)
+  def changeAuthor(user: String): Appointment = this.copy(authorId = user)
 
-  def addResult(aResult: Result): GameAppointment = this.copy(game = game.copy(result = Some(aResult)))
+  def addResult(aResult: Result): Appointment = this.copy(game = game.copy(result = Some(aResult)))
 
   def sport = game.sport
 
