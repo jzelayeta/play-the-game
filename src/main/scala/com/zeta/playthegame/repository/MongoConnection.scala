@@ -29,8 +29,6 @@ object MongoConnection extends MongoConnection {
 
   val database: IO[MongoDatabase] = mongoClient.map(_.getDatabase(databaseName).withCodecRegistry(codecRegistry))
   val appointmentsCollection: IO[MongoCollection[AppointmentDocument]] = database.map(_.getCollection(appointmentsCollectionName))
-
-
 }
 
 
