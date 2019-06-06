@@ -7,7 +7,7 @@ import com.zeta.playthegame.repository.Entities._
 
 object Codecs {
 
-  val codecRegistry = fromRegistries(fromProviders(classOf[GameAppointmentDocument], classOf[GameDocument], classOf[Result]), DEFAULT_CODEC_REGISTRY )
+  val codecRegistry = fromRegistries(fromProviders(classOf[AppointmentDocument], classOf[GameDocument], classOf[Result]), DEFAULT_CODEC_REGISTRY )
 
 
 }

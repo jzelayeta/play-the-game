@@ -3,10 +3,11 @@ package com.zeta.playthegame.integration
 import java.util.concurrent.TimeUnit.DAYS
 
 import cats.effect.IO
-import com.zeta.playthegame.model.Sport.FootballFive
 import com.zeta.playthegame.model.{Game, GameAppointment}
+import com.zeta.playthegame.model.Sport.FootballFive
+import com.zeta.playthegame.{AppointmentRequest, AppointmentsRoutes}
+import com.zeta.playthegame.repository.AppointmentsRepository
 import com.zeta.playthegame.util.Generators
-import com.zeta.playthegame.{GameAppointmentRequest, PlaythegameRoutes}
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -20,11 +21,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class GameAppointmentsIT extends FlatSpecLike
   with Matchers
   with Generators
-  with ServerApp {
+  with ServerApp
+  with MongoManager {
 
-  override val router: HttpRoutes[IO] = PlaythegameRoutes.gameAppointmentRoutes
+  private val testRepository = new AppointmentsRepository(MongoTestConnection)(global)
+  override val router: HttpRoutes[IO] = new AppointmentsRoutes(testRepository).routes
 
-  override def beforeAll() = startServer
+  override def beforeAll() = {
+    dropCollections.unsafeRunSync()
+    startServer
+  }
 
   override def afterAll() = stopServer
 
@@ -44,7 +50,7 @@ class GameAppointmentsIT extends FlatSpecLike
     val authorId = randomStringId
     val createdDate = millisNow
     val appointmentDate = millisNowPlus(2, DAYS)
-    val requestBody = GameAppointmentRequest(
+    val requestBody = AppointmentRequest(
       authorId,
       appointmentDate,
       createdDate,
