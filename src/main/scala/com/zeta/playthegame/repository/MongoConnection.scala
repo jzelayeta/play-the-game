@@ -2,7 +2,7 @@ package com.zeta.playthegame.repository
 
 import cats.effect.IO
 import com.typesafe.config.ConfigFactory
-import com.zeta.playthegame.repository.Entities.GameAppointmentDocument
+import com.zeta.playthegame.repository.Entities.AppointmentDocument
 import org.mongodb.scala._
 
 trait MongoConnection {
@@ -19,13 +19,13 @@ trait MongoConnection {
 
   val database: IO[MongoDatabase] = mongoClient.map(_.getDatabase(databaseName).withCodecRegistry(codecRegistry))
 
-  val appointmentsCollection: IO[MongoCollection[GameAppointmentDocument]]
+  val appointmentsCollection: IO[MongoCollection[AppointmentDocument]]
 }
 
 object MongoConnection extends MongoConnection {
   val databaseName = "matches"
   val appointmentsCollectionName = "appointments"
-  val appointmentsCollection: IO[MongoCollection[GameAppointmentDocument]] = database.map(_.getCollection(appointmentsCollectionName))
+  val appointmentsCollection: IO[MongoCollection[AppointmentDocument]] = database.map(_.getCollection(appointmentsCollectionName))
 }
 
 

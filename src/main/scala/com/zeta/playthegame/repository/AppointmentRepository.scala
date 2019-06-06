@@ -1,6 +1,6 @@
 package com.zeta.playthegame.repository
 
-import com.zeta.playthegame.GameAppointmentRequest
+import com.zeta.playthegame.AppointmentRequest
 import com.zeta.playthegame.repository.Entities._
 import com.zeta.playthegame.util.IOExt._
 import com.zeta.playthegame.util.LoggerPerClassAware
@@ -10,7 +10,7 @@ import org.mongodb.scala.bson.collection.immutable.Document
 
 import scala.concurrent.ExecutionContext
 
-class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
+class AppointmentRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
 
   def getAppointmentById(id: String) = mongoConnection.appointmentsCollection map {
       _.find(Document("_id" -> new ObjectId(id)))
@@ -20,8 +20,8 @@ class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit execu
     } toIO
 
 
-  def addGameAppointment(gameAppointmentRequest: GameAppointmentRequest) = {
-      val appointment = GameAppointmentDocument(new ObjectId(),
+  def addAppointment(gameAppointmentRequest: AppointmentRequest) = {
+      val appointment = AppointmentDocument(new ObjectId(),
         gameAppointmentRequest.authorId,
         gameAppointmentRequest.appointmentDate,
         gameAppointmentRequest.createdDate,
@@ -37,7 +37,7 @@ class GameAppointmentRepository(mongoConnection: MongoConnection)(implicit execu
         } toIO
       }
 
-    def deleteGameAppointment(id: String) = mongoConnection.appointmentsCollection.map {
+    def deleteAppointment(id: String) = mongoConnection.appointmentsCollection.map {
         _.findOneAndDelete(Document("_id" -> new ObjectId(id)))
           .map(_.toModel)
           .headOption()

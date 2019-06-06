@@ -2,22 +2,22 @@ package com.zeta.playthegame
 
 
 import cats.effect.IO
-import com.zeta.playthegame.repository.GameAppointmentRepository
+import com.zeta.playthegame.repository.AppointmentRepository
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-class GameAppointmentRoutes(gameAppointmentRepository: GameAppointmentRepository) {
+class AppointmentsRoutes(gameAppointmentRepository: AppointmentRepository) {
 
-  def gameAppointmentRoutes: HttpRoutes[IO] = {
+  def routes: HttpRoutes[IO] = {
     object dsl extends Http4sDsl[IO]
     import dsl._
 
     HttpRoutes.of[IO] {
-      case req @ POST -> Root / "appointments" => req.decode[GameAppointmentRequest] {
-        gameAppointmentRepository.addGameAppointment(_) flatMap {
+      case req @ POST -> Root / "appointments" => req.decode[AppointmentRequest] {
+        gameAppointmentRepository.addAppointment(_) flatMap {
             case Some(appointment) => Created(appointment)
             case _                 => InternalServerError()
           }
@@ -31,7 +31,7 @@ class GameAppointmentRoutes(gameAppointmentRepository: GameAppointmentRepository
           }
 
       case DELETE -> Root / "appointments" / id =>
-        gameAppointmentRepository.deleteGameAppointment(id)
+        gameAppointmentRepository.deleteAppointment(id)
           .flatMap {
             case Some(appointment) => Ok(appointment)
             case _                 => NotFound()
