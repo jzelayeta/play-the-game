@@ -5,7 +5,7 @@ import org.mongodb.scala.bson.ObjectId
 
 object Entities {
 
-  case class GameAppointmentDocument(_id: ObjectId, authorId: String, appointmentDate: Long, createdDate: Long, game: GameDocument) {
+  case class AppointmentDocument(_id: ObjectId, authorId: String, appointmentDate: Long, createdDate: Long, game: GameDocument) {
     def toModel = GameAppointment(_id.toString, authorId, appointmentDate, createdDate, game.toModel)
   }
 
