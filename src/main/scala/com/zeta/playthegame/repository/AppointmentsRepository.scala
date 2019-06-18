@@ -10,7 +10,7 @@ import org.mongodb.scala.bson.collection.immutable.Document
 
 import scala.concurrent.ExecutionContext
 
-class AppointmentRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
+class AppointmentsRepository(mongoConnection: MongoConnection)(implicit executionContext: ExecutionContext) extends LoggerPerClassAware {
 
   def getAppointmentById(id: String) = mongoConnection.appointmentsCollection map {
       _.find(Document("_id" -> new ObjectId(id)))
